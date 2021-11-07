@@ -2,7 +2,7 @@
 # Author: bluewww
 
 CC       = gcc
-CFLAGS   = -Og -g -Wall -Wextra
+CFLAGS   = -Og -g -std=gnu11 -Wall -Wextra
 CPPFLAGS = -I .
 LDLIBS   =
 
