@@ -10,18 +10,25 @@ CFLAGS  += `pkg-config --cflags readline`
 LDLIBS  += `pkg-config --libs readline`
 
 BISON   = bison
-BFLAGS  = -d
+YFLAGS  =
+
+FLEX	= flex
+LFLAGS  =
 
 all: huelle
 
 huelle: huelle.o
 
 grammar.tab.c grammar.tab.h: grammar.y
-	$(BISON) $(BFLAGS) $^
+	$(BISON) -d $(YFLAGS) $<
+
+
+%.c %.h: %.l
+	$(FLEX) --header-file=$(@:.c=.h) $(LFLAGS) -o $(@:.h=.c) $<
 
 .PHONY: clean
 clean:
-	$(RM) huelle *.o grammar.tab.c grammar.tab.h tokens.c
+	$(RM) huelle *.o grammar.tab.c grammar.tab.h tokens.c tokens.h
 
 # hacks
 

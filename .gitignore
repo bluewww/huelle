@@ -2,5 +2,6 @@
 *.o
 huelle
 tokens.c
+tokens.h
 grammar.tab.c
 grammar.tab.h
