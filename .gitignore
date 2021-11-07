@@ -1,2 +1,6 @@
+*.out
 *.o
 huelle
+tokens.c
+grammar.tab.c
+grammar.tab.h

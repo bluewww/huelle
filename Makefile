@@ -9,10 +9,21 @@ LDLIBS   =
 CFLAGS  += `pkg-config --cflags readline`
 LDLIBS  += `pkg-config --libs readline`
 
+BISON   = bison
+BFLAGS  = -d
+
 all: huelle
 
 huelle: huelle.o
 
+grammar.tab.c grammar.tab.h: grammar.y
+	$(BISON) $(BFLAGS) $^
+
 .PHONY: clean
 clean:
-	$(RM) huelle huelle.o
+	$(RM) huelle *.o grammar.tab.c grammar.tab.h tokens.c
+
+# hacks
+
+a.out: grammar.tab.c tokens.c
+	$(CC) $^
