@@ -47,7 +47,7 @@ xrealloc(void *ptr, size_t size)
 
 /* Read a string and return a pointer to it. Returns NULL on EOF. */
 char *
-hul_gets()
+hul_gets(void)
 {
 	if (line_read) {
 		free(line_read);
@@ -111,6 +111,77 @@ hul_fork_exec(char **args)
 	return 0;
 }
 
+#define HUL_XSTR(s) HUL_STR(s)
+#define HUL_STR(s) #s
+
+struct builtin {
+	char *name;
+	int (*func)(char **);
+};
+
+#define HUL_BUILTINS                                                         \
+	X(cd)                                                                \
+	X(help)                                                              \
+	X(exit)
+
+#define X(name) int hul_##name(char **args);
+HUL_BUILTINS;
+#undef X
+
+#define X(name) (struct builtin) { HUL_STR(name), &hul_##name },
+struct builtin builtins[] = { HUL_BUILTINS { 0 } };
+#undef X
+
+int
+hul_cd(char **args)
+{
+	if (args[1] == NULL) {
+		fprintf(stderr, "huelle: expected argument to `cd'\n");
+		return 1;
+	} else {
+		if (chdir(args[1]) != 0)
+			perror("huelle");
+	}
+	return 0;
+}
+
+int
+hul_help(__attribute__((unused)) char **args)
+{
+	printf("bluewww's huelle\n");
+	return 0;
+}
+
+int
+hul_exit(char **args)
+{
+	if (args[1] != NULL) {
+		if (strcmp(args[1], "0") == 0)
+			exit(EXIT_SUCCESS);
+		else
+			exit(EXIT_FAILURE);
+	} else
+		exit(EXIT_SUCCESS);
+
+	return 0;
+}
+
+int
+hul_run(char **args)
+{
+	/* invalid */
+	if (!args[0])
+		return 0;
+
+	/* builtins */
+	for (struct builtin *bin = builtins; bin->name; bin++)
+		if (strcmp(args[0], bin->name) == 0)
+			return (*bin->func)(args);
+
+	/* binaries */
+	return hul_fork_exec(args);
+}
+
 char *hul_line = NULL;
 char **hul_toks = NULL;
 char **args = NULL;
@@ -121,8 +192,11 @@ main(void)
 	for (;;) {
 		/* allocates the read string and frees it once we come back
 		 * here */
-		if (!(hul_line = hul_gets()))
+		if (!(hul_line = hul_gets())) {
+			printf("\n");
 			return EXIT_SUCCESS; /* eof */
+		}
+
 		if (hul_line) {
 			args = hul_toks = hul_split_line(hul_line);
 #ifdef HUL_DEBUG
@@ -130,9 +204,8 @@ main(void)
 				printf("tok=%s\n", *toks);
 #endif
 		}
-		if (!args[0])
-			continue;
-		hul_fork_exec(args);
+
+		hul_run(args);
 	}
 	return EXIT_SUCCESS;
 }
