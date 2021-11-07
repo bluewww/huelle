@@ -2,11 +2,25 @@
  * Author: bluewww */
 %{
 #include <stdio.h>
-int yylex(void);
+#include "grammar.tab.h"
+#include "tokens.h"
+
+/* Pass the argument to yyparse through to yylex. */
+extern int yylex (YYSTYPE * yylval_param, YYLTYPE * yylloc_param , yyscan_t yyscanner);
+extern void yyerror (YYLTYPE* yyllocp, yyscan_t unused, const char* msg);
+
 %}
 
+%code requires {
+	typedef void* yyscan_t;
+}
+
+%define api.pure full
 %define parse.error detailed
 %define parse.trace
+%locations
+
+%param { yyscan_t scanner }
 
 %token INT
 %left '+'
@@ -20,13 +34,17 @@ expr: INT
 %%
 
 void
-yyerror (char const *s)
+yyerror (YYLTYPE* yyllocp, yyscan_t unused, const char* msg)
 {
-	fprintf (stderr, "%s\n", s);
+	fprintf (stderr, "%s\n", msg);
 }
 
 int
 main(void)
 {
-	return yyparse();
+	yyscan_t scanner;
+	yylex_init(&scanner);
+	yyparse(scanner);
+	yylex_destroy(scanner);
+	return 0;
 }

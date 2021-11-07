@@ -5,3 +5,4 @@ tokens.c
 tokens.h
 grammar.tab.c
 grammar.tab.h
+TAGS

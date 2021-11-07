@@ -12,8 +12,10 @@ LDLIBS  += `pkg-config --libs readline`
 BISON   = bison
 YFLAGS  =
 
-FLEX	= flex
+FLEX    = flex
 LFLAGS  =
+
+CTAGS   = ctags
 
 all: huelle
 
@@ -30,6 +32,8 @@ grammar.tab.c grammar.tab.h: grammar.y
 clean:
 	$(RM) huelle *.o grammar.tab.c grammar.tab.h tokens.c tokens.h
 
+TAGS:
+	$(CTAGS) -R -e .
 # hacks
 
 a.out: grammar.tab.c tokens.c
