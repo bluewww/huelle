@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#include "grammar.tab.h"
+#include "example.tab.h"
 %}
 
 DIGIT [0-9]

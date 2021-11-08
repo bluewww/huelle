@@ -21,21 +21,21 @@ all: huelle
 
 huelle: huelle.o
 
-grammar.tab.c grammar.tab.h: grammar.y
+example.tab.c example.tab.h: example.y
 	$(BISON) -d $(YFLAGS) $<
 
 
-%.c %.h: %.l
+%.lex.c %.lex.h: %.l
 	$(FLEX) --header-file=$(@:.c=.h) $(LFLAGS) -o $(@:.h=.c) $<
 
 .PHONY: clean
 clean:
-	$(RM) huelle *.o grammar.tab.c grammar.tab.h tokens.c tokens.h a.out
+	$(RM) huelle *.o example.tab.c example.tab.h example.lex.c example.lex.h a.out
 
 .PHONY: TAGS
 TAGS:
 	$(CTAGS) -R -e .
 
 # hacks
-a.out: grammar.tab.c tokens.c
+a.out: example.tab.c example.lex.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAG) $(LDLIBS) $^

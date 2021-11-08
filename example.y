@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <readline/history.h>
 #include <readline/readline.h>
-#include "grammar.tab.h"
-#include "tokens.h"
+#include "example.tab.h"
+#include "example.lex.h"
 
 /* Pass the argument to yyparse through to yylex. */
 extern int yylex (YYSTYPE * yylval_param, YYLTYPE * yylloc_param , yyscan_t yyscanner);
