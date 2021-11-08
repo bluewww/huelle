@@ -1,8 +1,8 @@
 *.out
 *.o
 huelle
-tokens.c
-tokens.h
-grammar.tab.c
-grammar.tab.h
+*.tab.c
+*.tab.h
+*.lex.c
+*.lex.h
 TAGS

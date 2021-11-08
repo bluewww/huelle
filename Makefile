@@ -19,9 +19,13 @@ CTAGS   = ctags
 
 all: huelle
 
-huelle: huelle.o
+huelle: huelle.o huelle.tab.o huelle.lex.o
 
-example.tab.c example.tab.h: example.y
+huelle.o huelle.tab.o huelle.lex.o: huelle.tab.h huelle.lex.h
+
+%.c: %.y
+
+%.tab.c %.tab.h: %.y
 	$(BISON) -d $(YFLAGS) $<
 
 
@@ -30,7 +34,7 @@ example.tab.c example.tab.h: example.y
 
 .PHONY: clean
 clean:
-	$(RM) huelle *.o example.tab.c example.tab.h example.lex.c example.lex.h a.out
+	$(RM) huelle *.o *.tab.c *.tab.h *.lex.c *.lex.h a.out
 
 .PHONY: TAGS
 TAGS:

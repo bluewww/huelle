@@ -9,6 +9,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
+#include "huelle.tab.h"
+#include "huelle.lex.h"
 
 static char *line_read = (char *)NULL;
 
@@ -189,23 +192,31 @@ char **args = NULL;
 int
 main(void)
 {
+	yyscan_t scanner;
+	yylex_init(&scanner);
+	yyset_debug(1, scanner);
+
 	for (;;) {
 		/* allocates the read string and frees it once we come back
 		 * here */
 		if (!(hul_line = hul_gets())) {
 			printf("\n");
-			return EXIT_SUCCESS; /* eof */
+			goto success; /* eof */
 		}
 
-		if (hul_line) {
-			args = hul_toks = hul_split_line(hul_line);
+		args = hul_toks = hul_split_line(hul_line);
 #ifdef HUL_DEBUG
-			for (char **toks = hul_toks; *toks; toks++)
-				printf("tok=%s\n", *toks);
+		for (char **toks = hul_toks; *toks; toks++)
+			printf("tok=%s\n", *toks);
 #endif
-		}
+		YY_BUFFER_STATE buffer = yy_scan_string(hul_line, scanner);
+		yyparse(scanner);
+		yy_delete_buffer(buffer, scanner);
 
 		hul_run(args);
 	}
+
+success:
+	yylex_destroy(scanner);
 	return EXIT_SUCCESS;
 }
