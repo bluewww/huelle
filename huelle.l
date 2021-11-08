@@ -10,7 +10,7 @@
 
 DIGIT [0-9]
 OPERATION [+*\(\)]
-WORD [a-zA-Z0-9]+
+WORD [a-zA-Z0-9\-\.\/]+
 
 %option reentrant
 %option noyywrap
@@ -18,24 +18,28 @@ WORD [a-zA-Z0-9]+
 %option bison-locations
 
 %%
-[ \t];
+[ \t] {
+
+}
 
 \n {
 	return NEWL;
 }
 
-'>' {
+> {
+	fprintf(stderr, "GREATER\n");
 	return GREATER;
 }
 
 
 {WORD} {
 	yylval->str = strdup(yytext); /* TODO: xstrdup */
-	fprintf(stderr, "str:%s\n", yytext);
+	fprintf(stderr, "str:`%s'\n", yytext);
 	return WORD;
 }
 
 . {
+	fprintf(stderr, "undefined token:`%s'\n", yytext);
 	return YYUNDEF;
 }
 

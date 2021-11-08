@@ -186,7 +186,6 @@ hul_run(char **args)
 }
 
 char *hul_line = NULL;
-char **hul_toks = NULL;
 char **args = NULL;
 
 int
@@ -203,17 +202,12 @@ main(void)
 			printf("\n");
 			goto success; /* eof */
 		}
-
-		args = hul_toks = hul_split_line(hul_line);
 #ifdef HUL_DEBUG
-		for (char **toks = hul_toks; *toks; toks++)
-			printf("tok=%s\n", *toks);
+		printf("PARSING:%s\n", hul_line);
 #endif
 		YY_BUFFER_STATE buffer = yy_scan_string(hul_line, scanner);
 		yyparse(scanner);
 		yy_delete_buffer(buffer, scanner);
-
-		hul_run(args);
 	}
 
 success:

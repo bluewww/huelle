@@ -24,6 +24,7 @@ huelle: huelle.o huelle.tab.o huelle.lex.o
 huelle.o huelle.tab.o huelle.lex.o: huelle.tab.h huelle.lex.h
 
 %.c: %.y
+%.c: %.l
 
 %.tab.c %.tab.h: %.y
 	$(BISON) -d $(YFLAGS) $<
