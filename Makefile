@@ -30,11 +30,12 @@ grammar.tab.c grammar.tab.h: grammar.y
 
 .PHONY: clean
 clean:
-	$(RM) huelle *.o grammar.tab.c grammar.tab.h tokens.c tokens.h
+	$(RM) huelle *.o grammar.tab.c grammar.tab.h tokens.c tokens.h a.out
 
+.PHONY: TAGS
 TAGS:
 	$(CTAGS) -R -e .
-# hacks
 
+# hacks
 a.out: grammar.tab.c tokens.c
-	$(CC) $^
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAG) $(LDLIBS) $^
