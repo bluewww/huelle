@@ -2,12 +2,33 @@
 # Author: bluewww
 
 CC       = gcc
-CFLAGS   = -Og -g -std=gnu11 -Wall -Wextra
+ifeq ($(DEBUG),y)
+CFLAGS   = -Og -g
 CPPFLAGS = -I .
-LDLIBS   =
+else
+CFLAGS   = -O2 -g
+CPPFLAGS = -I . -DNDEBUG
+endif
 
-CFLAGS  += `pkg-config --cflags readline`
-LDLIBS  += `pkg-config --libs readline`
+
+LDLIBS   =
+LDFLAGS  =
+
+CFLAGS  += -std=gnu11 -Wall -Wextra
+
+# doesn't work well on centos machines so we manually expand
+# CFLAGS  += `pkg-config --cflags readline`
+# LDLIBS  += `pkg-config --libs readline`
+CFLAGS  += -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=600 -I/usr/include/ncurses
+LDLIBS  += -lreadline
+
+ifeq ($(DEBUG),y)
+CFLAGS  += -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer
+LDFLAGS += -fsanitize=address -fsanitize=undefined
+
+CFLAGS   += -fstack-protector-all
+CPPFLAGS += -D_FORTIFY_SOURCE=2
+endif
 
 BISON   = bison
 YFLAGS  =
@@ -41,6 +62,6 @@ clean:
 TAGS:
 	$(CTAGS) -R -e .
 
-# hacks
+# debugging
 a.out: example.tab.c example.lex.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAG) $(LDLIBS) $^

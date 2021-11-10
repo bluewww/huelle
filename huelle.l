@@ -16,8 +16,12 @@ WORD [a-zA-Z0-9\-\.\/]+
 %option noyywrap
 %option bison-bridge
 %option bison-locations
+%option noyywrap
+%option nounput
+%option noinput
 
 %%
+
 [ \t] {
 
 }
@@ -26,15 +30,59 @@ WORD [a-zA-Z0-9\-\.\/]+
 	return NEWL;
 }
 
-> {
-	fprintf(stderr, "GREATER\n");
+"<&" {
+	return LESSAND;
+}
+
+">" {
 	return GREATER;
 }
 
+"<" {
+	return LESS;
+}
+
+">&" {
+	return GREATAND;
+}
+
+">>" {
+	return DGREAT;
+}
+
+"<>" {
+	return LESSGREAT;
+}
+
+">|" {
+	return CLOBBER;
+}
+
+"<<" {
+	return DLESS;
+}
+
+"<<-" {
+	return DLESSDASH;
+}
+
+"|" {
+	return PIPE;
+}
+
+{DIGIT}+/(>|<) {
+	yylval->num = atoi(yytext); /* TODO: error checking */
+#ifdef HUL_DEBUG
+	fprintf(stderr, "io:`%d'\n", yylval->num);
+#endif
+	return IO_NUMBER;
+}
 
 {WORD} {
 	yylval->str = strdup(yytext); /* TODO: xstrdup */
+#ifdef HUL_DEBUG
 	fprintf(stderr, "str:`%s'\n", yytext);
+#endif
 	return WORD;
 }
 
